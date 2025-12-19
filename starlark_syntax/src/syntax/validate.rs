@@ -135,6 +135,9 @@ pub(crate) fn validate_module(stmt: &AstStmt, parser_state: &mut ParserState) {
             Stmt::Return(_) if !inside_def => {
                 parser_state.error(span, "`return` cannot be used outside of a `def` function")
             }
+            Stmt::Yield(_) if !inside_def => {
+                parser_state.error(span, "`yield` cannot be used outside of a `def` function")
+            }
             Stmt::Load(..) => {
                 if !top_level {
                     parser_state.error(span, "`load` must only occur at the top of a module");

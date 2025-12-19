@@ -120,6 +120,8 @@ impl<A: AstPayload> StmtP<A> {
             StmtP::Pass => StmtP::Pass,
             StmtP::Return(None) => StmtP::Return(None),
             StmtP::Return(Some(e)) => StmtP::Return(Some(e.into_map_payload(f))),
+            StmtP::Yield(None) => StmtP::Yield(None),
+            StmtP::Yield(Some(e)) => StmtP::Yield(Some(e.into_map_payload(f))),
             StmtP::Expression(e) => StmtP::Expression(e.into_map_payload(f)),
             StmtP::Assign(assign) => StmtP::Assign(assign.into_map_payload(f)),
             StmtP::AssignModify(lhs, op, rhs) => StmtP::AssignModify(

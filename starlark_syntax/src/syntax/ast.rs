@@ -386,6 +386,7 @@ pub enum StmtP<P: AstPayload> {
     Continue,
     Pass,
     Return(Option<AstExprP<P>>),
+    Yield(Option<AstExprP<P>>),
     Expression(AstExprP<P>),
     Assign(AssignP<P>),
     AssignModify(AstAssignTargetP<P>, AssignOp, Box<AstExprP<P>>),
@@ -708,6 +709,8 @@ impl Stmt {
             Stmt::Pass => writeln!(f, "{tab}pass"),
             Stmt::Return(Some(e)) => writeln!(f, "{}return {}", tab, e.node),
             Stmt::Return(None) => writeln!(f, "{tab}return"),
+            Stmt::Yield(Some(e)) => writeln!(f, "{}yield {}", tab, e.node),
+            Stmt::Yield(None) => writeln!(f, "{tab}yield"),
             Stmt::Expression(e) => writeln!(f, "{}{}", tab, e.node),
             Stmt::Assign(AssignP { lhs, ty, rhs }) => {
                 write!(f, "{}{} ", tab, lhs.node)?;

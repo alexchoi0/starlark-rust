@@ -779,6 +779,9 @@ impl Compiler<'_, '_, '_, '_> {
                 node: StmtCompiled::Return(self.expr(e)?),
                 span,
             })),
+            StmtP::Yield(_) => {
+                panic!("yield statement is not supported by starlark evaluator - use Blueprint evaluator")
+            }
             StmtP::If(cond, then_block) => self.stmt_if(span, cond, then_block, allow_gc),
             StmtP::IfElse(cond, then_block_else_block) => {
                 let (then_block, else_block) = &**then_block_else_block;

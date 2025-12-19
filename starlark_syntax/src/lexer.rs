@@ -686,8 +686,7 @@ pub enum Token {
         raise|\
         try|\
         while|\
-        with|\
-        yield"
+        with"
     )]
     Reserved, // One of the reserved keywords
 
@@ -748,6 +747,8 @@ pub enum Token {
     Pass,
     #[token("return")]
     Return,
+    #[token("yield")]
+    Yield,
     // Symbols
     #[token(",")]
     Comma,
@@ -896,6 +897,7 @@ impl Display for Token {
             Token::Pass => write!(f, "keyword 'pass'"),
             Token::Elif => write!(f, "keyword 'elif'"),
             Token::Return => write!(f, "keyword 'return'"),
+            Token::Yield => write!(f, "keyword 'yield'"),
             Token::Lambda => write!(f, "keyword 'lambda'"),
             Token::Comma => write!(f, "symbol ','"),
             Token::Semicolon => write!(f, "symbol ';'"),

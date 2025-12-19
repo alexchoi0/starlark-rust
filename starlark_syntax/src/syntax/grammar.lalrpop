@@ -163,6 +163,8 @@ SimpleStmt<S>: AstStmt =
 SmallStmt: AstStmt = {
     <l:@L> "return" <e:TestList?> <r:@R>
         => Stmt::Return(e).ast(l, r),
+    <l:@L> "yield" <e:TestList?> <r:@R>
+        => Stmt::Yield(e).ast(l, r),
     <@L> "break" <@R>
         => Stmt::Break.ast(<>),
     <@L> "continue" <@R>
@@ -452,6 +454,7 @@ extern {
       "pass" => lexer::Token::Pass,
       "elif" => lexer::Token::Elif,
       "return" => lexer::Token::Return,
+      "yield" => lexer::Token::Yield,
       "lambda" => lexer::Token::Lambda,
       // Symbols
       "," => lexer::Token::Comma,

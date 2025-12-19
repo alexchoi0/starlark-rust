@@ -474,6 +474,9 @@ impl<'a> State<'a> {
                 self.expr_opt(x.as_ref());
                 self.set_abort(Abort::Function);
             }
+            Stmt::Yield(x) => {
+                self.expr_opt(x.as_ref());
+            }
             Stmt::Assign(AssignP { lhs, ty, rhs }) => {
                 self.typ_opt(ty.as_ref());
                 self.expr(rhs);
