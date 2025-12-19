@@ -439,6 +439,12 @@ impl<'a, 'v> GlobalTypesBuilder<'a, 'v> {
             StmtP::Def(def) => self.assign_unset_ident(&def.name),
             StmtP::Load(_) => Err(self.internal_error(stmt.span, "load")),
             StmtP::Struct(_) => Ok(()),
+            StmtP::Match(m) => {
+                for case in &m.cases {
+                    self.eval_stmt_unset(&case.node.body)?;
+                }
+                Ok(())
+            }
         }
     }
 
@@ -512,6 +518,12 @@ impl<'a, 'v> GlobalTypesBuilder<'a, 'v> {
             StmtP::Def(def) => self.top_level_def(def),
             StmtP::Load(load) => self.load(load),
             StmtP::Struct(_) => Ok(()),
+            StmtP::Match(m) => {
+                for case in &m.cases {
+                    self.eval_stmt_unset(&case.node.body)?;
+                }
+                Ok(())
+            }
         }
     }
 

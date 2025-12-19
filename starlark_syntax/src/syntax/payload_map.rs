@@ -35,6 +35,8 @@ use crate::syntax::ast::IdentP;
 use crate::syntax::ast::LambdaP;
 use crate::syntax::ast::LoadArgP;
 use crate::syntax::ast::LoadP;
+use crate::syntax::ast::MatchP;
+use crate::syntax::ast::CaseClauseP;
 use crate::syntax::ast::ParameterP;
 use crate::syntax::ast::StmtP;
 use crate::syntax::ast::StructFieldP;
@@ -164,6 +166,7 @@ impl<A: AstPayload> StmtP<A> {
             }),
             StmtP::Load(load) => StmtP::Load(load.into_map_payload(f)),
             StmtP::Struct(s) => StmtP::Struct(s.into_map_payload(f)),
+            StmtP::Match(m) => StmtP::Match(m.into_map_payload(f)),
         }
     }
 }
@@ -191,6 +194,33 @@ impl<A: AstPayload> StructFieldP<A> {
             name: name.into_map_payload(f),
             typ: typ.into_map_payload(f),
             default: default.map(|e| e.into_map_payload(f)),
+        }
+    }
+}
+
+impl<A: AstPayload> MatchP<A> {
+    pub fn into_map_payload<B: AstPayload>(
+        self,
+        f: &mut impl AstPayloadFunction<A, B>,
+    ) -> MatchP<B> {
+        let MatchP { subject, cases } = self;
+        MatchP {
+            subject: subject.into_map_payload(f),
+            cases: cases.into_map(|c| c.map(|cc| cc.into_map_payload(f))),
+        }
+    }
+}
+
+impl<A: AstPayload> CaseClauseP<A> {
+    pub fn into_map_payload<B: AstPayload>(
+        self,
+        f: &mut impl AstPayloadFunction<A, B>,
+    ) -> CaseClauseP<B> {
+        let CaseClauseP { pattern, guard, body } = self;
+        CaseClauseP {
+            pattern: pattern.into_map_payload(f),
+            guard: guard.map(|g| g.into_map_payload(f)),
+            body: body.into_map_payload(f),
         }
     }
 }

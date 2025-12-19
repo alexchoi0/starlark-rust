@@ -124,7 +124,7 @@ Suite: AstStmt = {
         => grammar_util::statements(v, l, r)
 };
 
-Stmt: AstStmt = { DefStmt, IfStmt, ForStmt, StructStmt, SimpleStmt<SmallStmt> };
+Stmt: AstStmt = { DefStmt, IfStmt, ForStmt, StructStmt, MatchStmt, SimpleStmt<SmallStmt> };
 
 IfBody: AstStmt = ASTS<IfBody_>;
 IfBody_: Stmt = <c:Test> ":" <s:Suite> <el:ElseStmt?> => {
@@ -156,6 +156,24 @@ StructStmt_: Stmt = "struct" <name:AssignIdent> ":" <fields:StructBody>
 
 StructBody: Vec<AstStructField> = {
     "\n"+ "INDENT" "\n"* <v:(<StructField> "\n"*)+> "DEDENT" => v,
+};
+
+MatchStmt: AstStmt = ASTS<MatchStmt_>;
+MatchStmt_: Stmt = "match" <subject:Test> ":" <cases:MatchBody>
+    => Stmt::Match(MatchP { subject, cases });
+
+MatchBody: Vec<AstCaseClause> = {
+    "\n"+ "INDENT" "\n"* <v:(<CaseClause> "\n"*)+> "DEDENT" => v,
+};
+
+#[inline]
+ASTC<E>: AstCaseClause = <l:@L> <e:E> <r:@R>
+    => e.ast(l, r);
+
+CaseClause: AstCaseClause = ASTC<CaseClause_>;
+CaseClause_: CaseClauseP<AstNoPayload> = {
+    "case" <pattern:OrTest> <guard:("if" <OrTest>)?> ":" <body:Suite>
+        => CaseClauseP { pattern, guard, body },
 };
 
 #[inline]
@@ -476,6 +494,8 @@ extern {
       "return" => lexer::Token::Return,
       "struct" => lexer::Token::Struct,
       "yield" => lexer::Token::Yield,
+      "match" => lexer::Token::Match,
+      "case" => lexer::Token::Case,
       "lambda" => lexer::Token::Lambda,
       // Symbols
       "," => lexer::Token::Comma,

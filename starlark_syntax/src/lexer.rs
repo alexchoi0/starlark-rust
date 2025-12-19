@@ -750,6 +750,10 @@ pub enum Token {
     Struct,
     #[token("yield")]
     Yield,
+    #[token("match")]
+    Match,
+    #[token("case")]
+    Case,
     // Symbols
     #[token(",")]
     Comma,
@@ -900,6 +904,8 @@ impl Display for Token {
             Token::Return => write!(f, "keyword 'return'"),
             Token::Struct => write!(f, "keyword 'struct'"),
             Token::Yield => write!(f, "keyword 'yield'"),
+            Token::Match => write!(f, "keyword 'match'"),
+            Token::Case => write!(f, "keyword 'case'"),
             Token::Lambda => write!(f, "keyword 'lambda'"),
             Token::Comma => write!(f, "symbol ','"),
             Token::Semicolon => write!(f, "symbol ';'"),

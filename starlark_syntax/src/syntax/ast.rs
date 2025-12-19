@@ -404,6 +404,30 @@ pub struct StructP<P: AstPayload> {
     pub fields: Vec<AstStructFieldP<P>>,
 }
 
+/// A case arm in a match statement.
+#[derive(Debug, Clone)]
+pub struct CaseClauseP<P: AstPayload> {
+    /// The pattern to match against.
+    pub pattern: AstExprP<P>,
+    /// Optional guard condition.
+    pub guard: Option<AstExprP<P>>,
+    /// The body to execute if matched.
+    pub body: AstStmtP<P>,
+}
+
+pub type AstCaseClauseP<P> = Spanned<CaseClauseP<P>>;
+pub type AstCaseClause = AstCaseClauseP<AstNoPayload>;
+pub type CaseClause = CaseClauseP<AstNoPayload>;
+
+/// A match statement.
+#[derive(Debug, Clone)]
+pub struct MatchP<P: AstPayload> {
+    /// The expression to match against.
+    pub subject: AstExprP<P>,
+    /// The case clauses.
+    pub cases: Vec<AstCaseClauseP<P>>,
+}
+
 #[derive(Debug, Clone)]
 pub enum StmtP<P: AstPayload> {
     Break,
@@ -421,6 +445,7 @@ pub enum StmtP<P: AstPayload> {
     Def(DefP<P>),
     Load(LoadP<P>),
     Struct(StructP<P>),
+    Match(MatchP<P>),
 }
 
 impl<P: AstPayload> ArgumentP<P> {
@@ -805,6 +830,18 @@ impl Stmt {
                         write!(f, " = {}", default.node)?;
                     }
                     writeln!(f)?;
+                }
+                Ok(())
+            }
+            Stmt::Match(MatchP { subject, cases }) => {
+                writeln!(f, "{}match {}:", tab, subject.node)?;
+                for case in cases {
+                    write!(f, "{}  case {}", tab, case.node.pattern.node)?;
+                    if let Some(guard) = &case.node.guard {
+                        write!(f, " if {}", guard.node)?;
+                    }
+                    writeln!(f, ":")?;
+                    case.node.body.node.fmt_with_tab(f, tab.clone() + "    ")?;
                 }
                 Ok(())
             }

@@ -813,6 +813,9 @@ impl Compiler<'_, '_, '_, '_> {
             }
             StmtP::Load(..) => unreachable!(),
             StmtP::Struct(..) => unreachable!(),
+            StmtP::Match(..) => {
+                panic!("match statement is not supported by starlark evaluator - use Blueprint evaluator")
+            }
             StmtP::Pass => Ok(StmtsCompiled::empty()),
             StmtP::Break => Ok(StmtsCompiled::one(IrSpanned {
                 span,

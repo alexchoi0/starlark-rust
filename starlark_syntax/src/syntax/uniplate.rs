@@ -35,6 +35,7 @@ use crate::syntax::ast::ExprP;
 use crate::syntax::ast::ForClauseP;
 use crate::syntax::ast::ForP;
 use crate::syntax::ast::LambdaP;
+use crate::syntax::ast::MatchP;
 use crate::syntax::ast::ParameterP;
 use crate::syntax::ast::StmtP;
 use crate::syntax::ast::StructP;
@@ -150,6 +151,16 @@ impl<P: AstPayload> StmtP<P> {
                     }
                 }
             }
+            StmtP::Match(MatchP { subject, cases }) => {
+                f(Visit::Expr(subject));
+                for case in cases {
+                    f(Visit::Expr(&case.node.pattern));
+                    if let Some(guard) = &case.node.guard {
+                        f(Visit::Expr(guard));
+                    }
+                    f(Visit::Stmt(&case.node.body));
+                }
+            }
         }
     }
 
@@ -214,6 +225,16 @@ impl<P: AstPayload> StmtP<P> {
                     if let Some(default) = &mut field.node.default {
                         f(VisitMut::Expr(default));
                     }
+                }
+            }
+            StmtP::Match(MatchP { subject, cases }) => {
+                f(VisitMut::Expr(subject));
+                for case in cases {
+                    f(VisitMut::Expr(&mut case.node.pattern));
+                    if let Some(guard) = &mut case.node.guard {
+                        f(VisitMut::Expr(guard));
+                    }
+                    f(VisitMut::Stmt(&mut case.node.body));
                 }
             }
         }

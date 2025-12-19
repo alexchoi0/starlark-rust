@@ -332,6 +332,25 @@ fn stmt(x: &AstStmt, res: &mut Vec<Bind>) {
                 ))
             }
         }
+        Stmt::Yield(x) => {
+            if let Some(e) = x {
+                expr(e, res);
+            }
+            flow(res);
+        }
+        Stmt::Struct(_) => {}
+        Stmt::Match(m) => {
+            expr(&m.subject, res);
+            flow(res);
+            for case in &m.cases {
+                expr(&case.node.pattern, res);
+                if let Some(guard) = &case.node.guard {
+                    expr(guard, res);
+                }
+                stmt(&case.node.body, res);
+                flow(res);
+            }
+        }
     }
 }
 

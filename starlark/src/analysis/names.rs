@@ -536,6 +536,7 @@ impl<'a> State<'a> {
             }
             Stmt::Pass => {}
             Stmt::Struct(_) => {}
+            Stmt::Match(_) => {}
         }
     }
 
